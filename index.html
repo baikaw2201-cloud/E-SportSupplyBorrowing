@@ -135,7 +135,7 @@
         status: 'borrowed',
         returnImage: null
       });
-      save(const scriptURL = 'https://script.google.com/macros/s/AKfycbz7GhbuFXMHvw471thFaTSNck8RvpE3i8rhbSLNYLOinqqX73v06OJoqNkM0iPKb4Pv/exec';
+      const scriptURL = 'https://script.google.com/macros/s/AKfycbz7GhbuFXMHvw471thFaTSNck8RvpE3i8rhbSLNYLOinqqX73v06OJoqNkM0iPKb4Pv/exec';
 
 async function saveToSheets(data) {
   try {
@@ -203,7 +203,42 @@ document.getElementById('borrow-form').onsubmit = async (e) => {
         const idx = records.findIndex(r => r.id === id);
         records[idx].status = 'pending';
         records[idx].returnImage = e.target.result;
-        save();
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz7GhbuFXMHvw471thFaTSNck8RvpE3i8rhbSLNYLOinqqX73v06OJoqNkM0iPKb4Pv/exec';
+
+async function saveToSheets(data) {
+  try {
+    await fetch(scriptURL, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    console.log("บันทึกลง Sheets สำเร็จ");
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาด:", error);
+  }
+}
+
+// แก้ไขฟังก์ชันบันทึกการยืม
+document.getElementById('borrow-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const item = equipmentData.find(ex => ex.id === selectedId);
+  const payload = {
+    id: Date.now(),
+    itemName: item.name,
+    qty: currentQty,
+    studentName: document.getElementById('student-name').value,
+    studentId: document.getElementById('student-id').value,
+    borrowTime: document.getElementById('borrow-time').value,
+    deadline: document.getElementById('return-deadline').value,
+    status: 'borrowed',
+    returnImage: ''
+  };
+  
+  records.push(payload);
+  localStorage.setItem('sports_system_data', JSON.stringify(records));
+  await saveToSheets(payload); // ส่งไป Sheets
+  alert('ยืมสำเร็จและบันทึกลง Sheets แล้ว!');
+  location.reload();
+};);
         alert('ส่งหลักฐานการคืนแล้ว! รอครูตรวจสอบ');
         showPage('admin');
       };
@@ -229,7 +264,42 @@ document.getElementById('borrow-form').onsubmit = async (e) => {
     function approve(id) {
       const idx = records.findIndex(r => r.id === id);
       records[idx].status = 'returned';
-      save();
+      const scriptURL = 'https://script.google.com/macros/s/AKfycbz7GhbuFXMHvw471thFaTSNck8RvpE3i8rhbSLNYLOinqqX73v06OJoqNkM0iPKb4Pv/exec';
+
+async function saveToSheets(data) {
+  try {
+    await fetch(scriptURL, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    console.log("บันทึกลง Sheets สำเร็จ");
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาด:", error);
+  }
+}
+
+// แก้ไขฟังก์ชันบันทึกการยืม
+document.getElementById('borrow-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const item = equipmentData.find(ex => ex.id === selectedId);
+  const payload = {
+    id: Date.now(),
+    itemName: item.name,
+    qty: currentQty,
+    studentName: document.getElementById('student-name').value,
+    studentId: document.getElementById('student-id').value,
+    borrowTime: document.getElementById('borrow-time').value,
+    deadline: document.getElementById('return-deadline').value,
+    status: 'borrowed',
+    returnImage: ''
+  };
+  
+  records.push(payload);
+  localStorage.setItem('sports_system_data', JSON.stringify(records));
+  await saveToSheets(payload); // ส่งไป Sheets
+  alert('ยืมสำเร็จและบันทึกลง Sheets แล้ว!');
+  location.reload();
+};);
       renderAdminPage();
     }
 
@@ -239,4 +309,5 @@ document.getElementById('borrow-form').onsubmit = async (e) => {
   </script>
 </body>
 </html>
+
 
