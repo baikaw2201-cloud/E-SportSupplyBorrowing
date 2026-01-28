@@ -11,30 +11,31 @@
     .tab-active { background: white; color: #2563eb; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .equipment-card { transition: all 0.2s ease-in-out; }
     .equipment-card:active { transform: scale(0.95); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
   </style>
 </head>
 <body class="h-full bg-slate-50">
 
   <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-6 shadow-xl sticky top-0 z-50">
     <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-2xl font-bold mb-4 font-prompt">🏟️ คลังอุปกรณ์กีฬา</h1>
+      <h1 class="text-2xl font-bold mb-4 font-prompt">คลังอุปกรณ์กีฬา</h1>
       <nav class="flex p-1 bg-black/20 rounded-xl text-sm font-bold">
-        <button onclick="showPage('borrow')" id="nav-borrow" class="tab-active flex-1 py-2 rounded-lg transition-all">📤 ยืมของ</button>
-        <button onclick="showPage('return')" id="nav-return" class="flex-1 py-2 rounded-lg transition-all">📸 ส่งคืน</button>
-        <button onclick="showPage('admin')" id="nav-admin" class="flex-1 py-2 rounded-lg transition-all">🔑 แอดมิน</button>
+        <button onclick="showPage('borrow')" id="nav-borrow" class="tab-active flex-1 py-2 rounded-lg transition-all">ยืมของ</button>
+        <button onclick="showPage('return')" id="nav-return" class="flex-1 py-2 rounded-lg transition-all">ส่งคืน</button>
+        <button onclick="showPage('admin')" id="nav-admin" class="flex-1 py-2 rounded-lg transition-all">แอดมิน</button>
       </nav>
     </div>
   </header>
 
   <main class="max-w-4xl mx-auto p-4 md:p-8">
     <section id="page-borrow" class="space-y-6">
-      <div id="equipment-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        </div>
+      <div id="equipment-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
 
-      <div id="borrow-form-container" class="hidden bg-white p-6 rounded-2xl shadow-2xl border border-blue-100 animate-bounce-in">
+      <div id="borrow-form-container" class="hidden bg-white p-6 rounded-2xl shadow-2xl border border-blue-100">
         <div class="flex justify-between items-center mb-4">
             <h3 class="font-bold text-lg text-blue-700">ระบุข้อมูลการยืม</h3>
-            <button onclick="closeForm()" class="text-gray-400">✖</button>
+            <button onclick="closeForm()" class="text-gray-400 text-2xl">&times;</button>
         </div>
         <form id="borrow-form" class="space-y-4">
           <input type="text" id="student-name" required placeholder="ชื่อ-นามสกุล" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
@@ -49,7 +50,7 @@
             </div>
           </div>
           
-          <div class="text-sm text-gray-500">📅 กำหนดวันคืน:</div>
+          <div class="text-sm text-gray-500">กำหนดวันคืน:</div>
           <input type="date" id="return-deadline" required class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500">
           
           <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-blue-700 active:scale-95 transition-all">ยืนยันการยืมอุปกรณ์</button>
@@ -58,31 +59,32 @@
     </section>
 
     <section id="page-return" class="hidden space-y-4">
-        <h3 class="font-bold text-xl text-center mb-6">📦 รายการที่รอการส่งคืน</h3>
-        <div id="return-list" class="grid gap-4"></div>
+        <h3 class="font-bold text-xl text-center mb-6 text-slate-700">รายการที่รอการส่งคืน</h3>
+        <div id="return-list" class="grid gap-4">
+            </div>
     </section>
 
     <section id="page-admin" class="hidden space-y-4">
-        <h3 class="font-bold text-xl mb-4">🔑 ประวัติกิจกรรมทั้งหมด</h3>
+        <h3 class="font-bold text-xl mb-4 text-slate-700">ประวัติกิจกรรมทั้งหมด</h3>
         <div id="admin-list" class="space-y-3"></div>
     </section>
   </main>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz5EmH4u6u4O7UMYwd3Do643Jjdam-eFKwhQ2OltSs5opWSoSb15d2Xh8QIxD8bNd2A/exec'; 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz5EmH4u6u4O7UMYwd3Do643Jjdam-eFKwhQ2OltSs5opWSoSb15d2Xh8QIxD8bNd2A/exec';
 
     const equipmentData = [
       { id: 'fb', name: 'ฟุตบอล', emoji: '⚽', color: 'from-green-400 to-emerald-600' },
       { id: 'bb', name: 'บาสเกตบอล', emoji: '🏀', color: 'from-orange-400 to-red-600' },
       { id: 'vb', name: 'วอลเลย์บอล', emoji: '🏐', color: 'from-indigo-400 to-purple-600' },
       { id: 'bt', name: 'แบดมินตัน', emoji: '🏸', color: 'from-blue-400 to-cyan-600' },
-      { id: 'tk', name: 'ตะกร้อ', emoji: '🏐', color: 'from-yellow-400 to-orange-500' },
+      { id: 'tk', name: 'ตะกร้อ', emoji: '🥎', color: 'from-yellow-400 to-orange-500' },
       { id: 'pn', name: 'ปิงปอง', emoji: '🏓', color: 'from-red-400 to-pink-600' },
       { id: 'pt', name: 'เปตอง', emoji: '⚪', color: 'from-slate-400 to-slate-600' },
       { id: 'fn', name: 'ฟุตซอล', emoji: '⚽', color: 'from-teal-400 to-blue-500' },
       { id: 'af', name: 'อเมริกันฟุตบอล', emoji: '🏈', color: 'from-amber-700 to-brown-900' },
       { id: 'jr', name: 'เชือกกระโดด', emoji: '➰', color: 'from-pink-400 to-rose-500' },
-      { id: 'mk', name: 'มาร์กเกอร์ซ้อม', emoji: '📐', color: 'from-orange-300 to-yellow-500' },
+      { id: 'mk', name: 'มาร์กเกอร์', emoji: '📐', color: 'from-orange-300 to-yellow-500' },
       { id: 'sw', name: 'นกหวีด', emoji: '📢', color: 'from-gray-400 to-gray-600' }
     ];
 
@@ -95,6 +97,7 @@
       document.getElementById('page-' + pageId).classList.remove('hidden');
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
       document.getElementById('nav-' + pageId).classList.add('tab-active');
+      if(pageId === 'borrow') renderBorrowPage();
       if(pageId === 'return') renderReturnPage();
       if(pageId === 'admin') renderAdminPage();
     }
@@ -131,7 +134,7 @@
       e.preventDefault();
       const btn = document.getElementById('submit-btn');
       btn.disabled = true;
-      btn.innerText = '⏳ กำลังบันทึกข้อมูล...';
+      btn.innerText = 'กำลังบันทึกข้อมูล...';
 
       const item = equipmentData.find(ex => ex.id === selectedId);
       const payload = {
@@ -150,104 +153,98 @@
         await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
         records.push(payload);
         localStorage.setItem('sports_system_data', JSON.stringify(records));
-        alert('🎉 บันทึกการยืมสำเร็จ!');
+        alert('บันทึกการยืมสำเร็จ!');
         location.reload();
       } catch (err) {
-        alert('⚠️ ไม่สามารถเชื่อมต่อ Google Sheets ได้ แต่บันทึกไว้ในเครื่องแล้ว');
+        alert('ไม่สามารถเชื่อมต่อ Sheets ได้ แต่บันทึกในเครื่องแล้ว');
       }
     };
 
-    function renderAdminPage() {
-  const list = document.getElementById('admin-list');
-  // กรองเฉพาะรายการที่มีการส่งรูปคืนมา (status เป็น pending หรือ returned)
-  list.innerHTML = records.length ? records.map(r => `
-    <div class="bg-white p-4 rounded-xl shadow-sm border mb-3 flex justify-between items-center">
-      <div>
-        <p class="font-bold text-sm text-slate-700">${r.studentName}</p>
-        <p class="text-xs text-slate-400">${r.itemName} [${r.qty} ชิ้น] - ${r.borrowTime}</p>
-        
-        ${r.returnImage ? `
-          <button onclick="viewPhoto('${r.returnImage}')" class="mt-2 bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 hover:bg-blue-200">
-            👁️ กดเพื่อดูรูปหลักฐาน
-          </button>
-        ` : '<p class="text-[10px] text-orange-500 mt-1 italic">ยังไม่ได้ส่งรูปคืน</p>'}
-      </div>
-      <span class="text-[10px] font-bold px-2 py-1 rounded-full ${r.status === 'borrowed' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}">
-        ${r.status.toUpperCase()}
-      </span>
-    </div>
-  `).join('') : '<p class="text-center text-gray-400">ยังไม่มีประวัติกิจกรรม</p>';
-}
+    function renderReturnPage() {
+      const list = document.getElementById('return-list');
+      const borrowedItems = records.filter(r => r.status === 'borrowed');
+      
+      if(borrowedItems.length === 0) {
+        list.innerHTML = '<p class="text-center py-10 text-gray-400">ไม่มีอุปกรณ์ค้างส่งในขณะนี้</p>';
+        return;
+      }
 
-// ฟังก์ชันพิเศษ: เมื่อกดปุ่มแล้วจะโชว์รูปขึ้นมาเต็มจอ
-function viewPhoto(base64Data) {
-  const modal = document.createElement('div');
-  modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;";
-  modal.innerHTML = `
-    <div style="text-align:right; width:100%; max-width:500px;">
-        <button onclick="this.parentElement.parentElement.remove()" style="color:white; font-size:30px; margin-bottom:10px;">✕</button>
-    </div>
-    <img src="${base64Data}" style="max-width:100%; max-height:80%; border-radius:10px; box-shadow:0 0 20px rgba(255,255,255,0.2);">
-    <p style="color:white; margin-top:15px; font-family:sans-serif;">รูปหลักฐานการคืนอุปกรณ์</p>
-  `;
-  document.body.appendChild(modal);
-}
+      list.innerHTML = borrowedItems.map(r => `
+        <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-orange-500 animate-fade-in">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-lg text-slate-800">${r.itemName} (${r.qty} ชิ้น)</p>
+              <p class="text-xs text-slate-500 mt-1">ผู้ยืม: ${r.studentName} [${r.studentId}]</p>
+              <p class="text-[10px] text-red-500 font-bold mt-1">กำหนดคืน: ${r.deadline}</p>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-dashed border-slate-100">
+            <p class="text-xs font-bold text-blue-600 mb-2">📸 ถ่ายรูปหลักฐานการคืน:</p>
+            <input type="file" accept="image/*" capture="environment" onchange="submitReturn(${r.id}, this)" class="w-full text-xs">
+          </div>
+        </div>
+      `).join('');
+    }
+
     async function submitReturn(id, input) {
-    if(!input.files[0]) return;
-    
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        const img = new Image();
-        img.src = e.target.result;
-        img.onload = async function() {
-            // สร้าง Canvas เพื่อย่อรูป
-            const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 400; // ย่อเหลือความกว้าง 400px (ประหยัดพื้นที่)
-            const scaleSize = MAX_WIDTH / img.width;
-            canvas.width = MAX_WIDTH;
-            canvas.height = img.height * scaleSize;
+        if(!input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 400;
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-            // แปลงเป็น Base64 ที่ขนาดเล็กลง
-            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); // คุณภาพ 70%
-
-            const idx = records.findIndex(r => r.id === id);
-            records[idx].status = 'pending';
-            records[idx].returnImage = compressedBase64;
-            
-            // ส่งข้อมูลไป Sheets
-            try {
-                await fetch(scriptURL, { method: 'POST', body: JSON.stringify(records[idx]) });
-                localStorage.setItem('sports_system_data', JSON.stringify(records));
-                alert('ส่งคืนสำเร็จ!');
-                location.reload();
-            } catch (err) { alert('ส่งรูปไม่สำเร็จ'); }
+                const idx = records.findIndex(r => r.id === id);
+                records[idx].status = 'pending';
+                records[idx].returnImage = compressedBase64;
+                
+                try {
+                    await fetch(scriptURL, { method: 'POST', body: JSON.stringify(records[idx]) });
+                    localStorage.setItem('sports_system_data', JSON.stringify(records));
+                    alert('ส่งหลักฐานคืนสำเร็จ!');
+                    showPage('admin');
+                } catch (err) { alert('ส่งข้อมูลไม่สำเร็จ'); }
+            };
         };
-    };
-    reader.readAsDataURL(input.files[0]);
-}
+        reader.readAsDataURL(input.files[0]);
+    }
 
     function renderAdminPage() {
       const list = document.getElementById('admin-list');
       list.innerHTML = records.length ? records.map(r => `
-        <div class="bg-white p-4 rounded-xl shadow-sm border flex justify-between items-center">
+        <div class="bg-white p-4 rounded-xl shadow-sm border mb-3 flex justify-between items-center animate-fade-in">
           <div>
             <p class="font-bold text-sm text-slate-700">${r.studentName}</p>
-            <p class="text-xs text-slate-400">${r.itemName} [${r.qty}] - ${r.borrowTime}</p>
+            <p class="text-xs text-slate-400">${r.itemName} [${r.qty} ชิ้น] - ${r.borrowTime}</p>
+            ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="mt-2 bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold">👁️ ดูรูปหลักฐาน</button>` : ''}
           </div>
           <span class="text-[10px] font-bold px-2 py-1 rounded-full ${r.status === 'borrowed' ? 'bg-blue-100 text-blue-700' : r.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">
             ${r.status.toUpperCase()}
           </span>
         </div>
-      `).join('') : '<p class="text-center text-gray-400">ยังไม่มีประวัติ</p>';
+      `).join('') : '<p class="text-center text-gray-400">ยังไม่มีประวัติกิจกรรม</p>';
+    }
+
+    function viewPhoto(base64Data) {
+      const modal = document.createElement('div');
+      modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;";
+      modal.onclick = () => modal.remove();
+      modal.innerHTML = `
+        <div style="text-align:right; width:100%; max-width:500px;"><button style="color:white; font-size:30px;">✕</button></div>
+        <img src="${base64Data}" style="max-width:100%; max-height:80%; border-radius:10px; border:2px solid white;">
+      `;
+      document.body.appendChild(modal);
     }
 
     renderBorrowPage();
   </script>
 </body>
 </html>
-
-
-
