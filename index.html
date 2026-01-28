@@ -69,7 +69,7 @@
   </main>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycby6ouvf0W5XGZZ3DVCZnZg1kEHRHQGqpx_Aw0U3FgnCV68Ts6EEU2lxhkcGop5GqyID/exec'; 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz5EmH4u6u4O7UMYwd3Do643Jjdam-eFKwhQ2OltSs5opWSoSb15d2Xh8QIxD8bNd2A/exec'; 
 
     const equipmentData = [
       { id: 'fb', name: 'ฟุตบอล', emoji: '⚽', color: 'from-green-400 to-emerald-600' },
@@ -178,26 +178,41 @@
     }
 
     async function submitReturn(id, input) {
-        if(!input.files[0]) return;
-        const btn = input;
-        btn.disabled = true;
-        
-        const reader = new FileReader();
-        reader.onload = async function(e) {
+    if(!input.files[0]) return;
+    
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = async function() {
+            // สร้าง Canvas เพื่อย่อรูป
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 400; // ย่อเหลือความกว้าง 400px (ประหยัดพื้นที่)
+            const scaleSize = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH;
+            canvas.height = img.height * scaleSize;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // แปลงเป็น Base64 ที่ขนาดเล็กลง
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); // คุณภาพ 70%
+
             const idx = records.findIndex(r => r.id === id);
-            const originalData = records[idx];
-            originalData.status = 'pending';
-            originalData.returnImage = e.target.result;
+            records[idx].status = 'pending';
+            records[idx].returnImage = compressedBase64;
             
+            // ส่งข้อมูลไป Sheets
             try {
-                await fetch(scriptURL, { method: 'POST', body: JSON.stringify(originalData) });
+                await fetch(scriptURL, { method: 'POST', body: JSON.stringify(records[idx]) });
                 localStorage.setItem('sports_system_data', JSON.stringify(records));
-                alert('✅ ส่งรูปหลักฐานคืนสำเร็จ!');
-                showPage('admin');
-            } catch (err) { alert('❌ เกิดข้อผิดพลาดในการส่งรูป'); btn.disabled = false; }
+                alert('ส่งคืนสำเร็จ!');
+                location.reload();
+            } catch (err) { alert('ส่งรูปไม่สำเร็จ'); }
         };
-        reader.readAsDataURL(input.files[0]);
-    }
+    };
+    reader.readAsDataURL(input.files[0]);
+}
 
     function renderAdminPage() {
       const list = document.getElementById('admin-list');
@@ -218,4 +233,5 @@
   </script>
 </body>
 </html>
+
 
