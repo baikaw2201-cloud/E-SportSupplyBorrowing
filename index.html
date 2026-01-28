@@ -23,7 +23,8 @@
       <nav class="flex p-1 bg-black/20 rounded-xl text-sm font-bold">
         <button onclick="showPage('borrow')" id="nav-borrow" class="tab-active flex-1 py-2 rounded-lg transition-all">ยืมของ</button>
         <button onclick="showPage('return')" id="nav-return" class="flex-1 py-2 rounded-lg transition-all">ส่งคืน</button>
-        <button onclick="showPage('admin')" id="nav-admin" class="flex-1 py-2 rounded-lg transition-all">แอดมิน</button>
+        <button onclick="const ADMIN_PASSWORD = '12345';
+let isAdminAuthenticated = false;('admin')" id="nav-admin" class="flex-1 py-2 rounded-lg transition-all">แอดมิน</button>
       </nav>
     </div>
   </header>
@@ -71,7 +72,7 @@
   </main>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz5EmH4u6u4O7UMYwd3Do643Jjdam-eFKwhQ2OltSs5opWSoSb15d2Xh8QIxD8bNd2A/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwnx1Oac70qv8yEz2I05mlcxoRB8mSE3f_LGA1iWtH0r0jhSM404bWB1TZfH7iBVfFh/exec';
 
     const equipmentData = [
       { id: 'fb', name: 'ฟุตบอล', emoji: '⚽', color: 'from-green-400 to-emerald-600' },
@@ -216,23 +217,54 @@
         };
         reader.readAsDataURL(input.files[0]);
     }
-
-    function renderAdminPage() {
-      const list = document.getElementById('admin-list');
-      list.innerHTML = records.length ? records.map(r => `
-        <div class="bg-white p-4 rounded-xl shadow-sm border mb-3 flex justify-between items-center animate-fade-in">
-          <div>
-            <p class="font-bold text-sm text-slate-700">${r.studentName}</p>
-            <p class="text-xs text-slate-400">${r.itemName} [${r.qty} ชิ้น] - ${r.borrowTime}</p>
-            ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="mt-2 bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold">👁️ ดูรูปหลักฐาน</button>` : ''}
-          </div>
-          <span class="text-[10px] font-bold px-2 py-1 rounded-full ${r.status === 'borrowed' ? 'bg-blue-100 text-blue-700' : r.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">
-            ${r.status.toUpperCase()}
-          </span>
+function renderAdminPage() {
+  const list = document.getElementById('admin-list');
+  list.innerHTML = records.length ? records.map(r => `
+    <div class="bg-white p-4 rounded-xl shadow-sm border mb-3 flex justify-between items-center animate-fade-in">
+      <div class="flex-1">
+        <p class="font-bold text-sm text-slate-700">${r.studentName}</p>
+        <p class="text-xs text-slate-400">${r.itemName} [${r.qty} ชิ้น] - ${r.borrowTime}</p>
+        
+        <div class="flex gap-2 mt-2">
+          ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="bg-blue-100 text-blue-600 px-2 py-1 rounded text-[10px] font-bold">👁️ ดูรูป</button>` : ''}
+          
+          ${r.status === 'pending' ? `
+            <button onclick="approveReturn(${r.id})" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-bold shadow-sm hover:bg-green-600">
+              ✅ อนุมัติการคืน
+            </button>
+          ` : ''}
         </div>
-      `).join('') : '<p class="text-center text-gray-400">ยังไม่มีประวัติกิจกรรม</p>';
-    }
+      </div>
+      <span class="text-[10px] font-bold px-2 py-1 rounded-full ${getStatusColor(r.status)}">
+        ${r.status.toUpperCase()}
+      </span>
+    </div>
+  `).join('') : '<p class="text-center text-gray-400">ยังไม่มีประวัติกิจกรรม</p>';
+}
 
+// ฟังก์ชันส่งคำสั่งอนุมัติไปที่ Sheets
+async function approveReturn(id) {
+    if(!confirm("ยืนยันว่าได้รับอุปกรณ์คืนเรียบร้อยแล้ว?")) return;
+    
+    const idx = records.findIndex(r => r.id === id);
+    const payload = { action: "approve", id: id };
+
+    try {
+        await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+        records[idx].status = 'returned'; // อัปเดตในเครื่อง
+        localStorage.setItem('sports_system_data', JSON.stringify(records));
+        alert('อนุมัติเรียบร้อย! สถานะใน Sheets จะเปลี่ยนเป็น returned');
+        renderAdminPage();
+    } catch (err) {
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อ Sheets');
+    }
+}
+
+function getStatusColor(status) {
+    if(status === 'borrowed') return 'bg-blue-100 text-blue-700';
+    if(status === 'pending') return 'bg-yellow-100 text-yellow-700';
+    return 'bg-green-100 text-green-700';
+}
     function viewPhoto(base64Data) {
       const modal = document.createElement('div');
       modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;";
@@ -248,3 +280,4 @@
   </script>
 </body>
 </html>
+
