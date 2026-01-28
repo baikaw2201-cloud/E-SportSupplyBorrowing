@@ -23,8 +23,7 @@
       <nav class="flex p-1 bg-black/20 rounded-xl text-sm font-bold">
         <button onclick="showPage('borrow')" id="nav-borrow" class="tab-active flex-1 py-2 rounded-lg transition-all">ยืมของ</button>
         <button onclick="showPage('return')" id="nav-return" class="flex-1 py-2 rounded-lg transition-all">ส่งคืน</button>
-        <button onclick="const ADMIN_PASSWORD = '12345';
-let isAdminAuthenticated = false;('admin')" id="nav-admin" class="flex-1 py-2 rounded-lg transition-all">แอดมิน</button>
+        <button onclick="showPage('admin')" id="nav-admin" class="flex-1 py-2 rounded-lg transition-all">แอดมิน</button>
       </nav>
     </div>
   </header>
@@ -73,7 +72,8 @@ let isAdminAuthenticated = false;('admin')" id="nav-admin" class="flex-1 py-2 ro
 
   <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwnx1Oac70qv8yEz2I05mlcxoRB8mSE3f_LGA1iWtH0r0jhSM404bWB1TZfH7iBVfFh/exec';
-
+    const ADMIN_PASSWORD = '12345';
+    let isAdminAuthenticated = false;
     const equipmentData = [
       { id: 'fb', name: 'ฟุตบอล', emoji: '⚽', color: 'from-green-400 to-emerald-600' },
       { id: 'bb', name: 'บาสเกตบอล', emoji: '🏀', color: 'from-orange-400 to-red-600' },
@@ -93,16 +93,33 @@ let isAdminAuthenticated = false;('admin')" id="nav-admin" class="flex-1 py-2 ro
     let currentQty = 1;
     let records = JSON.parse(localStorage.getItem('sports_system_data')) || [];
 
-    function showPage(pageId) {
-      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-      document.getElementById('page-' + pageId).classList.remove('hidden');
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
-      document.getElementById('nav-' + pageId).classList.add('tab-active');
-      if(pageId === 'borrow') renderBorrowPage();
-      if(pageId === 'return') renderReturnPage();
-      if(pageId === 'admin') renderAdminPage();
+   function showPage(pageId) {
+  // ตรวจสอบว่าถ้าจะเข้าหน้า admin ต้องผ่านรหัสผ่านก่อน
+  if (pageId === 'admin' && !isAdminAuthenticated) {
+    const password = prompt("🔑 กรุณาใส่รหัสผ่านแอดมินเพื่อเข้าถึงข้อมูล:");
+    
+    if (password === ADMIN_PASSWORD) {
+      isAdminAuthenticated = true; // รหัสถูก ให้ผ่านได้
+      alert("✅ ยินดีต้อนรับแอดมิน");
+    } else {
+      alert("❌ รหัสผ่านไม่ถูกต้อง! ไม่สามารถเข้าใช้งานได้");
+      return; // สั่งให้หยุดทำงานตรงนี้ ไม่เปลี่ยนหน้า
     }
-
+  }
+  
+  // --- ส่วนการเปลี่ยนหน้าจอ (ทำหน้าที่ซ่อนหน้าอื่นและเปิดหน้าปัจจุบัน) ---
+  document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+  document.getElementById('page-' + pageId).classList.remove('hidden');
+  
+  // สลับสถานะปุ่มเมนู (Tab) ให้ดูว่าอยู่หน้าไหน
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
+  document.getElementById('nav-' + pageId).classList.add('tab-active');
+  
+  // สั่งให้ข้อมูลในหน้านั้นๆ อัปเดตใหม่ทุกครั้งที่กดเข้า
+  if(pageId === 'borrow') renderBorrowPage();
+  if(pageId === 'return') renderReturnPage();
+  if(pageId === 'admin') renderAdminPage();
+}
     function renderBorrowPage() {
       const grid = document.getElementById('equipment-grid');
       grid.innerHTML = equipmentData.map(eq => `
@@ -219,27 +236,79 @@ let isAdminAuthenticated = false;('admin')" id="nav-admin" class="flex-1 py-2 ro
     }
 function renderAdminPage() {
   const list = document.getElementById('admin-list');
-  list.innerHTML = records.length ? records.map(r => `
-    <div class="bg-white p-4 rounded-xl shadow-sm border mb-3 flex justify-between items-center animate-fade-in">
+  
+  // สร้างส่วนหัวและปุ่มออกจากระบบ
+  let html = `
+    <div class="flex justify-between items-center mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+      <div class="text-sm font-bold text-blue-800">โหมดผู้ดูแลระบบ</div>
+      <button onclick="logoutAdmin()" class="text-[10px] bg-white border border-red-200 px-3 py-1 rounded-lg text-red-500 font-bold shadow-sm hover:bg-red-50 transition-all">
+        🚪 ออกจากระบบ
+      </button>
+    </div>
+  `;
+
+  if (records.length === 0) {
+    list.innerHTML = html + `
+      <div class="text-center py-10 text-gray-400">
+        <p>ยังไม่มีประวัติการยืม-คืนในระบบ</p>
+      </div>`;
+    return;
+  }
+
+  // วาดรายการประวัติทั้งหมด
+  html += records.slice().reverse().map(r => `
+    <div class="bg-white p-4 rounded-2xl shadow-sm border mb-4 flex flex-col sm:flex-row justify-between gap-4 animate-fade-in">
       <div class="flex-1">
-        <p class="font-bold text-sm text-slate-700">${r.studentName}</p>
-        <p class="text-xs text-slate-400">${r.itemName} [${r.qty} ชิ้น] - ${r.borrowTime}</p>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="font-bold text-slate-800 text-base">${r.studentName}</span>
+          <span class="text-[10px] text-slate-400">ID: ${r.studentId}</span>
+        </div>
+        <p class="text-sm text-slate-600 font-medium">📦 ${r.itemName} (${r.qty} ชิ้น)</p>
+        <p class="text-[10px] text-slate-400 mt-1 italic">🕒 ยืมเมื่อ: ${r.borrowTime}</p>
         
-        <div class="flex gap-2 mt-2">
-          ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="bg-blue-100 text-blue-600 px-2 py-1 rounded text-[10px] font-bold">👁️ ดูรูป</button>` : ''}
+        <div class="flex flex-wrap gap-2 mt-3">
+          ${r.returnImage ? `
+            <button onclick="viewPhoto('${r.returnImage}')" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-[10px] font-bold border border-indigo-100 hover:bg-indigo-100 transition-all">
+              👁️ ดูรูปหลักฐาน
+            </button>
+          ` : ''}
           
           ${r.status === 'pending' ? `
-            <button onclick="approveReturn(${r.id})" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-bold shadow-sm hover:bg-green-600">
+            <button onclick="approveReturn(${r.id})" class="bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-md hover:bg-emerald-600 active:scale-95 transition-all flex items-center gap-1">
               ✅ อนุมัติการคืน
             </button>
           ` : ''}
         </div>
       </div>
-      <span class="text-[10px] font-bold px-2 py-1 rounded-full ${getStatusColor(r.status)}">
-        ${r.status.toUpperCase()}
-      </span>
+
+      <div class="flex flex-row sm:flex-col justify-between items-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-50">
+        <span class="text-[10px] font-bold px-3 py-1 rounded-full shadow-sm ${getStatusColor(r.status)}">
+          ${r.status === 'borrowed' ? '🔴 กำลังยืม' : r.status === 'pending' ? '🟡 รอแอดมินตรวจ' : '🟢 คืนเรียบร้อย'}
+        </span>
+        <button onclick="deleteRecord(${r.id})" class="text-[10px] text-slate-300 hover:text-red-400 transition-all flex items-center gap-1">
+          🗑️ ลบข้อมูล
+        </button>
+      </div>
     </div>
-  `).join('') : '<p class="text-center text-gray-400">ยังไม่มีประวัติกิจกรรม</p>';
+  `).join('');
+  
+  list.innerHTML = html;
+}
+
+// ฟังก์ชันสำหรับเลือกสีสถานะ
+function getStatusColor(status) {
+    if(status === 'borrowed') return 'bg-red-50 text-red-600 border border-red-100';
+    if(status === 'pending') return 'bg-amber-50 text-amber-600 border border-amber-100';
+    return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
+}
+
+// ฟังก์ชันลบรายการเฉพาะในเครื่องนี้
+function deleteRecord(id) {
+  if(confirm("🗑️ ลบประวัตินี้ออกจากหน้าแอดมินเครื่องนี้? \n(ข้อมูลใน Google Sheets จะยังคงอยู่)")) {
+    records = records.filter(r => r.id !== id);
+    localStorage.setItem('sports_system_data', JSON.stringify(records));
+    renderAdminPage();
+  }
 }
 
 // ฟังก์ชันส่งคำสั่งอนุมัติไปที่ Sheets
@@ -280,4 +349,5 @@ function getStatusColor(status) {
   </script>
 </body>
 </html>
+
 
