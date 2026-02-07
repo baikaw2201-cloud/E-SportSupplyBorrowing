@@ -178,31 +178,51 @@
       }
     };
 
-    function renderReturnPage() {
-      const list = document.getElementById('return-list');
-      const borrowedItems = records.filter(r => r.status === 'borrowed');
-      
-      if(borrowedItems.length === 0) {
-        list.innerHTML = '<p class="text-center py-10 text-gray-400">ไม่มีอุปกรณ์ค้างส่งในขณะนี้</p>';
-        return;
-      }
+   function renderReturnPage() {
+  const list = document.getElementById('return-list');
+  const borrowedItems = records.filter(r => r.status === 'borrowed');
+  
+  if(borrowedItems.length === 0) {
+    list.innerHTML = '<p class="text-center py-10 text-gray-400">ไม่มีอุปกรณ์ค้างส่งในขณะนี้</p>';
+    return;
+  }
 
-      list.innerHTML = borrowedItems.map(r => `
-        <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-orange-500 animate-fade-in">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="font-bold text-lg text-slate-800">${r.itemName} (${r.qty} ชิ้น)</p>
-              <p class="text-xs text-slate-500 mt-1">ผู้ยืม: ${r.studentName} [${r.studentId}]</p>
-              <p class="text-[10px] text-red-500 font-bold mt-1">กำหนดคืน: ${r.deadline}</p>
-            </div>
-          </div>
-          <div class="mt-4 pt-4 border-t border-dashed border-slate-100">
-            <p class="text-xs font-bold text-blue-600 mb-2">📸 ถ่ายรูปหลักฐานการคืน:</p>
-            <input type="file" accept="image/*" capture="environment" onchange="submitReturn(${r.id}, this)" class="w-full text-xs">
+  list.innerHTML = borrowedItems.map(r => {
+    // คำนวณระยะเวลาคงเหลือ
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const deadline = new Date(r.deadline);
+    deadline.setHours(0,0,0,0);
+    
+    const diffTime = deadline - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // กำหนดข้อความแจ้งเตือน
+    let alertHtml = '';
+    if (diffDays < 0) {
+      alertHtml = `<div class="bg-red-600 text-white text-[10px] px-2 py-1 rounded mb-2 animate-pulse">⚠️ เลยกำหนดคืนแล้ว ${Math.abs(diffDays)} วัน!</div>`;
+    } else if (diffDays <= 1) {
+      alertHtml = `<div class="bg-orange-500 text-white text-[10px] px-2 py-1 rounded mb-2">⏰ ใกล้ถึงกำหนดคืน (เหลือ ${diffDays === 0 ? 'วันนี้' : '1 วัน'})</div>`;
+    }
+
+    return `
+      <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 ${diffDays < 0 ? 'border-red-600' : 'border-orange-500'} animate-fade-in">
+        ${alertHtml}
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-bold text-lg text-slate-800">${r.itemName} (${r.qty} ชิ้น)</p>
+            <p class="text-xs text-slate-500 mt-1">ผู้ยืม: ${r.studentName} [${r.studentId}]</p>
+            <p class="text-[10px] ${diffDays < 0 ? 'text-red-600' : 'text-slate-400'} font-bold mt-1">📅 กำหนดคืน: ${r.deadline}</p>
           </div>
         </div>
-      `).join('');
-    }
+        <div class="mt-4 pt-4 border-t border-dashed border-slate-100">
+          <p class="text-xs font-bold text-blue-600 mb-2">📸 ถ่ายรูปหลักฐานการคืน:</p>
+          <input type="file" accept="image/*" capture="environment" onchange="submitReturn(${r.id}, this)" class="w-full text-xs">
+        </div>
+      </div>
+    `;
+  }).join('');
+}
 
     async function submitReturn(id, input) {
         if(!input.files[0]) return;
@@ -349,5 +369,6 @@ function getStatusColor(status) {
   </script>
 </body>
 </html>
+
 
 
