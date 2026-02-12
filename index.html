@@ -71,7 +71,7 @@
   </main>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwnx1Oac70qv8yEz2I05mlcxoRB8mSE3f_LGA1iWtH0r0jhSM404bWB1TZfH7iBVfFh/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzPdc5si50zLBmSOeGV5kM-7zG63DYuQcs5UXPmiviXh4xcEiOxneG6lCKKVjI2wgfx/exec';
     const ADMIN_PASSWORD = '12345';
     let isAdminAuthenticated = false;
     const equipmentData = [
@@ -83,16 +83,28 @@
       { id: 'pn', name: 'ปิงปอง', emoji: '🏓', color: 'from-red-400 to-pink-600' },
       { id: 'pt', name: 'เปตอง', emoji: '⚪', color: 'from-slate-400 to-slate-600' },
       { id: 'fn', name: 'ฟุตซอล', emoji: '⚽', color: 'from-teal-400 to-blue-500' },
-      { id: 'af', name: 'อเมริกันฟุตบอล', emoji: '🏈', color: 'from-amber-700 to-brown-900' },
       { id: 'jr', name: 'เชือกกระโดด', emoji: '➰', color: 'from-pink-400 to-rose-500' },
-      { id: 'mk', name: 'มาร์กเกอร์', emoji: '📐', color: 'from-orange-300 to-yellow-500' },
-      { id: 'sw', name: 'นกหวีด', emoji: '📢', color: 'from-gray-400 to-gray-600' }
     ];
 
     let selectedId = null;
     let currentQty = 1;
     let records = JSON.parse(localStorage.getItem('sports_system_data')) || [];
+async function refreshData() {
+  try {
+    const response = await fetch(scriptURL);
+    const data = await response.json();
+    records = data; // อัปเดตข้อมูลในเครื่องด้วยข้อมูลจาก Sheets
+    
+    // สั่งให้หน้าปัจจุบันวาดรายการใหม่
+    if(document.getElementById('nav-return').classList.contains('tab-active')) renderReturnPage();
+    if(document.getElementById('nav-admin').classList.contains('tab-active')) renderAdminPage();
+  } catch (err) {
+    console.log("Error sync data:", err);
+  }
+}
 
+// เรียกใช้ครั้งแรกเมื่อโหลดหน้าเว็บ
+refreshData();
    function showPage(pageId) {
   // ตรวจสอบว่าถ้าจะเข้าหน้า admin ต้องผ่านรหัสผ่านก่อน
   if (pageId === 'admin' && !isAdminAuthenticated) {
@@ -369,6 +381,7 @@ function getStatusColor(status) {
   </script>
 </body>
 </html>
+
 
 
 
