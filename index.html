@@ -71,7 +71,7 @@
   </main>
 
    <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzPdc5si50zLBmSOeGV5kM-7zG63DYuQcs5UXPmiviXh4xcEiOxneG6lCKKVjI2wgfx/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwiZ6vfwZ79jiMDHTslh_1LqWjBbte8Gk8yxPsueMZ_twIbTsrEZYR6Qf_rblKun0GH/exec';
     const ADMIN_PASSWORD = '12345';
     let isAdminAuthenticated = false;
     const equipmentData = [
@@ -92,24 +92,29 @@
 
     // --- ฟังก์ชันหลัก: ดึงข้อมูลจาก Sheets ---
     async function refreshData() {
-      try {
-        const response = await fetch(scriptURL);
-        const data = await response.json();
-        // ล้างช่องว่างที่อาจติดมากับ status จาก Sheets
-        records = data.map(r => ({...r, status: r.status ? r.status.trim() : ''})); 
-        
-        // สั่งให้หน้าปัจจุบันวาดรายการใหม่
-        if(!document.getElementById('page-borrow').classList.contains('hidden')) renderBorrowPage();
-        if(!document.getElementById('page-return').classList.contains('hidden')) renderReturnPage();
-        if(!document.getElementById('page-admin').classList.contains('hidden')) renderAdminPage();
-        console.log("Synced:", records);
-      } catch (err) {
-        console.log("Sync error:", err);
-      }
+  try {
+    // เพิ่ม query parameter เพื่อป้องกัน browser จำ cache ข้อมูลเก่า
+    const response = await fetch(scriptURL + '?t=' + Date.now()); 
+    const data = await response.json();
+    
+    // ตรวจสอบและจัดการข้อมูล
+    if (Array.isArray(data)) {
+      records = data.map(r => ({
+        ...r, 
+        status: r.status ? r.status.trim() : '' // ล้างช่องว่าง
+      })); 
     }
-
-    // เรียกดึงข้อมูลทันทีเมื่อเปิดเว็บ
-    refreshData();
+    
+    // สั่งวาดหน้าจอใหม่ตามหน้าที่เปิดอยู่
+    if(!document.getElementById('page-borrow').classList.contains('hidden')) renderBorrowPage();
+    if(!document.getElementById('page-return').classList.contains('hidden')) renderReturnPage();
+    if(!document.getElementById('page-admin').classList.contains('hidden')) renderAdminPage();
+    
+    console.log("อัปเดตข้อมูลสำเร็จ:", records);
+  } catch (err) {
+    console.error("Sync error:", err);
+  }
+}
 
     function showPage(pageId) {
       if (pageId === 'admin' && !isAdminAuthenticated) {
@@ -264,14 +269,41 @@
       list.innerHTML = html;
     }
 
-    async function approveReturn(id) {
-        if(!confirm("ยืนยันการคืน?")) return;
-        try {
-            const res = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: "approve", id: id }) });
-            alert('อนุมัติแล้ว!');
-            await refreshData(); // ดึงข้อมูลใหม่เพื่อเปลี่ยนสถานะหน้าจอทันที
-        } catch (err) { alert('เกิดข้อผิดพลาด'); }
+   async function approveReturn(id) {
+    if(!confirm("ยืนยันว่าได้รับอุปกรณ์คืนเรียบร้อยแล้ว?")) return;
+    
+    // แสดง Loading สั้นๆ ที่ปุ่ม (Optional)
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = "กำลังบันทึก...";
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(scriptURL, { 
+            method: 'POST', 
+            // ส่ง action: "approve" เพื่อให้ Apps Script ฝั่ง Sheets รู้ว่าต้องเปลี่ยนเป็น returned
+            body: JSON.stringify({ action: "approve", id: id.toString() }) 
+        });
+        
+        const result = await res.json();
+        
+        if(result.result === "success") {
+            alert('✅ อนุมัติสำเร็จ!');
+            // รอสักครู่เพื่อให้ Sheets ประมวลผลเสร็จก่อนดึงข้อมูลใหม่
+            setTimeout(async () => {
+                await refreshData(); 
+            }, 500);
+        } else {
+            alert('เกิดข้อผิดพลาดจากระบบ: ' + result.error);
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    } catch (err) { 
+        alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'); 
+        btn.innerText = originalText;
+        btn.disabled = false;
     }
+}
 
     function getStatusColor(status) {
         if(status === 'borrowed') return 'bg-red-50 text-red-600';
@@ -291,6 +323,7 @@
 </script>
 </body>
 </html>
+
 
 
 
