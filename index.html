@@ -13,11 +13,11 @@
     .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
   </style>
 </head>
-<body class="h-full bg-slate-50">
+<body class="h-full bg-slate-50 text-slate-800">
 
   <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-6 shadow-xl sticky top-0 z-50">
     <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-2xl font-bold mb-4 font-prompt">คลังอุปกรณ์กีฬา</h1>
+      <h1 class="text-2xl font-bold mb-4">คลังอุปกรณ์กีฬา</h1>
       <nav class="flex p-1 bg-black/20 rounded-xl text-sm font-bold">
         <button onclick="showPage('borrow')" id="nav-borrow" class="tab-active flex-1 py-2 rounded-lg transition-all">ยืมของ</button>
         <button onclick="showPage('return')" id="nav-return" class="flex-1 py-2 rounded-lg transition-all">ส่งคืน</button>
@@ -27,45 +27,51 @@
   </header>
 
   <main class="max-w-4xl mx-auto p-4 md:p-8">
-    <section id="page-borrow" class="space-y-6 animate-fade-in">
-      <div id="equipment-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
-      <div id="borrow-form-container" class="hidden bg-white p-6 rounded-2xl shadow-2xl border border-blue-100">
-          <div class="flex justify-between items-center mb-4">
-              <h3 class="font-bold text-lg text-blue-700">ระบุข้อมูลการยืม</h3>
-              <button onclick="closeForm()" class="text-gray-400 text-2xl">&times;</button>
-          </div>
-          <form id="borrow-form" class="space-y-4">
-            <input type="text" id="student-name" required placeholder="ชื่อ-นามสกุล" class="w-full p-3 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-            <input type="number" id="student-id" required placeholder="รหัสประจำตัวนักเรียน" class="w-full p-3 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-            <div class="flex items-center justify-between bg-blue-50 p-4 rounded-xl">
-                <span class="font-bold text-blue-800">จำนวนที่ยืม:</span>
-                <div class="flex items-center gap-3">
-                    <button type="button" onclick="changeQty(-1)" class="w-10 h-10 bg-white rounded-full shadow font-bold">-</button>
-                    <span id="borrow-qty" class="text-xl font-bold w-6 text-center">1</span>
-                    <button type="button" onclick="changeQty(1)" class="w-10 h-10 bg-white rounded-full shadow font-bold">+</button>
-                </div>
+    <section id="page-borrow" class="space-y-6">
+      <div id="equipment-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 animate-fade-in"></div>
+
+      <div id="borrow-form-container" class="hidden bg-white p-6 rounded-2xl shadow-2xl border border-blue-100 animate-fade-in">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-lg text-blue-700">ระบุข้อมูลการยืม</h3>
+            <button onclick="closeForm()" class="text-gray-400 text-2xl">&times;</button>
+        </div>
+        <form id="borrow-form" class="space-y-4">
+          <input type="text" id="student-name" required placeholder="ชื่อ-นามสกุล" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="number" id="student-id" required placeholder="รหัสประจำตัวนักเรียน" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+          
+          <div class="flex items-center justify-between bg-blue-50 p-4 rounded-xl text-blue-900 font-bold">
+            <span>จำนวนที่ต้องการ:</span>
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="changeQty(-1)" class="w-10 h-10 bg-white rounded-full shadow text-xl font-bold">-</button>
+              <span id="borrow-qty" class="text-xl font-bold w-6 text-center">1</span>
+              <button type="button" onclick="changeQty(1)" class="w-10 h-10 bg-white rounded-full shadow text-xl font-bold">+</button>
             </div>
-            <div class="text-sm text-gray-500">กำหนดวันคืน:</div>
-            <input type="date" id="return-deadline" required class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-            <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg">ยืนยันการยืมอุปกรณ์</button>
-          </form>
+          </div>
+          
+          <div class="text-sm text-gray-500">กำหนดวันคืน:</div>
+          <input type="date" id="return-deadline" required class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+          
+          <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-blue-700 transition-all active:scale-95">ยืนยันการยืมอุปกรณ์</button>
+        </form>
       </div>
     </section>
 
     <section id="page-return" class="hidden space-y-4 animate-fade-in">
-        <h3 class="font-bold text-xl text-center mb-6 text-slate-700">รายการที่ค้างอยู่ที่คุณ</h3>
+        <h3 class="font-bold text-xl text-center mb-6 text-slate-700">รายการที่ต้องส่งคืน</h3>
         <div id="return-list" class="grid gap-4"></div>
     </section>
 
     <section id="page-admin" class="hidden space-y-4 animate-fade-in">
-        <h3 class="font-bold text-xl mb-4 text-slate-700">ประวัติกิจกรรมทั้งหมด</h3>
+        <h3 class="font-bold text-xl mb-4 text-slate-700">ประวัติและสถานะ</h3>
         <div id="admin-list" class="space-y-3"></div>
     </section>
   </main>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzZSMLJiD-KFe4mVnr7ul2-jtIoTpfCtmkO0Y5wYZMBMiKPuOcNjkrRKkqh5Km0e3_F/exec';
+    // 🔗 แก้ไขลิงก์ Script URL ของคุณที่นี่
+    const scriptURL = 'ใส่_URL_ที่ได้จาก_APPS_SCRIPT_ตรงนี้';
     const ADMIN_PASSWORD = '1234'; 
+    
     let isAdminAuthenticated = false;
     let records = [];
     let selectedId = null;
@@ -83,16 +89,17 @@
     async function syncData() {
       try {
         const response = await fetch(scriptURL);
-        const data = await response.json();
-        records = Array.isArray(data) ? data : [];
-        if(!document.getElementById('page-return').classList.contains('hidden')) renderReturnPage();
-        if(!document.getElementById('page-admin').classList.contains('hidden')) renderAdminPage();
+        records = await response.json();
+        const isReturnOpen = !document.getElementById('page-return').classList.contains('hidden');
+        const isAdminOpen = !document.getElementById('page-admin').classList.contains('hidden');
+        if(isReturnOpen) renderReturnPage();
+        if(isAdminOpen) renderAdminPage();
       } catch (err) { console.error("Sync Error:", err); }
     }
 
     function showPage(pageId) {
       if (pageId === 'admin' && !isAdminAuthenticated) {
-        const pass = prompt("กรุณาใส่รหัสผ่านแอดมิน:");
+        const pass = prompt("รหัสผ่านแอดมิน:");
         if (pass === ADMIN_PASSWORD) { isAdminAuthenticated = true; } 
         else { alert("รหัสผ่านไม่ถูกต้อง!"); return; }
       }
@@ -107,21 +114,27 @@
     function renderBorrowPage() {
       const grid = document.getElementById('equipment-grid');
       grid.innerHTML = equipmentData.map(eq => `
-        <div onclick="selectItem('${eq.id}')" class="p-4 rounded-2xl bg-white border-2 transition-all cursor-pointer text-center shadow-sm ${selectedId === eq.id ? 'border-blue-600 bg-blue-50' : 'border-transparent'}">
+        <div onclick="selectItem('${eq.id}')" class="p-4 rounded-2xl bg-white border-2 transition-all cursor-pointer text-center shadow-sm hover:shadow-md ${selectedId === eq.id ? 'border-blue-600 bg-blue-50' : 'border-transparent'}">
           <div class="bg-gradient-to-br ${eq.color} w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2 text-white shadow-md">${eq.emoji}</div>
-          <div class="font-bold text-sm">${eq.name}</div>
+          <div class="font-bold text-sm text-slate-700">${eq.name}</div>
         </div>
       `).join('');
     }
 
-    function selectItem(id) { selectedId = id; document.getElementById('borrow-form-container').classList.remove('hidden'); renderBorrowPage(); }
+    function selectItem(id) { 
+        selectedId = id; 
+        document.getElementById('borrow-form-container').classList.remove('hidden'); 
+        renderBorrowPage();
+        document.getElementById('borrow-form-container').scrollIntoView({ behavior: 'smooth' });
+    }
+    
     function closeForm() { selectedId = null; document.getElementById('borrow-form-container').classList.add('hidden'); renderBorrowPage(); }
-    function changeQty(delta) { currentQty = Math.max(1, currentQty + delta); document.getElementById('borrow-qty').innerText = currentQty; }
+    function changeQty(d) { currentQty = Math.max(1, currentQty + d); document.getElementById('borrow-qty').innerText = currentQty; }
 
     document.getElementById('borrow-form').onsubmit = async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submit-btn');
-      btn.disabled = true; btn.innerText = '⏳ กำลังบันทึก...';
+      btn.disabled = true; btn.innerText = '⏳ กำลังส่งข้อมูล...';
       
       const item = equipmentData.find(ex => ex.id === selectedId);
       const payload = {
@@ -137,17 +150,16 @@
 
       try {
         await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-        alert('✅ บันทึกสำเร็จ!');
+        alert('✅ บันทึกการยืมสำเร็จ!');
         document.getElementById('borrow-form').reset();
         closeForm();
         showPage('return');
-      } catch (err) { alert('❌ ผิดพลาด'); } finally { btn.disabled = false; btn.innerText = 'ยืนยันการยืมอุปกรณ์'; }
+      } catch (err) { alert('❌ เกิดข้อผิดพลาด'); } finally { btn.disabled = false; btn.innerText = 'ยืนยันการยืมอุปกรณ์'; }
     };
 
     function renderReturnPage() {
       const list = document.getElementById('return-list');
       const borrowedItems = records.filter(r => r.status === 'borrowed');
-      
       if(borrowedItems.length === 0) {
         list.innerHTML = `<div class="text-center py-10 text-gray-400 bg-white rounded-2xl border-2 border-dashed">🙌 ไม่มีอุปกรณ์ค้างส่ง</div>`;
         return;
@@ -155,10 +167,10 @@
       list.innerHTML = borrowedItems.map(r => `
         <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-orange-500 animate-fade-in mb-4">
             <p class="font-bold text-lg text-slate-800">${r.itemName} (${r.qty} ชิ้น)</p>
-            <p class="text-xs text-slate-500 mt-1">👤 ผู้ยืม: ${r.studentName}</p>
-            <p class="text-[10px] text-red-500 font-bold mt-1">🗓️ กำหนดคืน: ${r.deadline}</p>
+            <p class="text-xs text-slate-500 mt-1 italic">ผู้ยืม: ${r.studentName}</p>
+            <p class="text-[10px] text-red-500 font-bold mt-1 uppercase">กำหนดคืน: ${r.deadline}</p>
             <div class="mt-4 pt-4 border-t border-dashed">
-              <p class="text-xs font-bold text-blue-600 mb-2">📷 ถ่ายรูปส่งคืนที่นี่:</p>
+              <p class="text-xs font-bold text-blue-600 mb-2 font-prompt italic">📷 ถ่ายรูปส่งคืนที่นี่:</p>
               <input type="file" accept="image/*" capture="environment" onchange="submitReturn('${r.id}', this)" class="w-full text-xs">
             </div>
         </div>
@@ -169,9 +181,9 @@
       if(!input.files[0]) return;
       const reader = new FileReader();
       reader.onload = async (e) => {
-        input.parentElement.innerHTML = "<div class='text-blue-600 font-bold animate-pulse'>⏳ กำลังส่งหลักฐาน...</div>";
+        input.parentElement.innerHTML = "<div class='text-blue-600 font-bold animate-pulse text-sm py-2'>⏳ กำลังส่งรูปภาพ...</div>";
         await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: 'return', id: id, returnImage: e.target.result }) });
-        alert('🎉 ส่งรูปเรียบร้อย! รอแอดมินอนุมัติ');
+        alert('🎉 ส่งคืนสำเร็จ! รอแอดมินอนุมัติ');
         syncData();
       };
       reader.readAsDataURL(input.files[0]);
@@ -180,21 +192,21 @@
     function renderAdminPage() {
       const list = document.getElementById('admin-list');
       list.innerHTML = records.slice().reverse().map(r => `
-        <div class="bg-white p-4 rounded-xl shadow-sm border mb-3 flex justify-between items-center animate-fade-in">
-          <div>
+        <div class="bg-white p-4 rounded-xl shadow-sm border mb-3 flex justify-between items-center animate-fade-in text-left">
+          <div class="space-y-1">
             <p class="font-bold text-sm text-slate-700">${r.studentName}</p>
-            <p class="text-xs text-slate-500">${r.itemName} [${r.qty} ชิ้น]</p>
-            <p class="text-[10px] text-blue-500 mt-1 font-medium">🕒 ยืมเมื่อ: ${r.borrowTime}</p>
+            <p class="text-xs text-slate-500 font-medium">${r.itemName} [${r.qty} ชิ้น]</p>
+            <p class="text-[10px] text-blue-500 font-semibold italic">🕒 ยืมเมื่อ: ${r.borrowTime}</p>
             <div class="mt-2 flex gap-2">
-              ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="text-blue-600 text-[10px] underline font-bold">👁️ ดูรูป</button>` : ''}
-              ${r.status === 'pending' ? `<button onclick="approve('${r.id}')" id="btn-app-${r.id}" class="bg-green-600 text-white px-2 py-1 rounded text-[10px] font-bold shadow">✅ อนุมัติคืน</button>` : ''}
+              ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="text-blue-600 text-[10px] underline font-bold hover:text-blue-800 transition-colors">👁️ ดูรูปหลักฐาน</button>` : ''}
+              ${r.status === 'pending' ? `<button onclick="approve('${r.id}')" id="btn-app-${r.id}" class="bg-green-600 text-white px-2 py-1 rounded text-[10px] font-bold shadow hover:bg-green-700">✅ อนุมัติคืน</button>` : ''}
             </div>
           </div>
-          <div class="text-right">
+          <div class="text-right flex flex-col items-end">
              <span class="text-[10px] font-bold px-2 py-1 rounded-full ${r.status==='borrowed'?'bg-orange-100 text-orange-600':r.status==='pending'?'bg-blue-100 text-blue-600':'bg-green-100 text-green-600'}">
                 ${r.status === 'borrowed' ? '🔴 ยังไม่คืน' : r.status === 'pending' ? '⏳ รออนุมัติ' : '🟢 คืนแล้ว'}
              </span>
-             <p class="text-[9px] text-slate-400 mt-2">กำหนดคืน: ${r.deadline}</p>
+             <p class="text-[9px] text-slate-400 mt-2 font-bold italic underline decoration-red-200">📅 กำหนด: ${r.deadline}</p>
           </div>
         </div>
       `).join('') || '<p class="text-center text-gray-400 py-10">ยังไม่พบประวัติ</p>';
@@ -202,22 +214,24 @@
 
     async function approve(id) {
       if(!confirm("ยืนยันรับคืนอุปกรณ์?")) return;
-      document.getElementById('btn-app-'+id).disabled = true;
+      const btn = document.getElementById('btn-app-'+id);
+      btn.disabled = true; btn.innerText = "⌛...";
       await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: 'approve', id: id }) });
-      alert("✅ อนุมัติเรียบร้อย!");
+      alert("✅ อนุมัติสำเร็จ");
       syncData();
     }
 
     function viewPhoto(data) {
       const modal = document.createElement('div');
-      modal.className = "fixed inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center p-4";
+      modal.className = "fixed inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center p-4 cursor-zoom-out";
       modal.onclick = () => modal.remove();
-      modal.innerHTML = `<div class="text-white mb-2 self-end text-2xl font-bold cursor-pointer">&times;</div><img src="${data}" class="max-w-full max-h-[80vh] rounded-lg border-2 border-white shadow-2xl">`;
+      modal.innerHTML = `<div class="text-white mb-2 self-end text-3xl font-bold">&times;</div><img src="${data}" class="max-w-full max-h-[85vh] rounded-lg border-2 border-white shadow-2xl animate-fade-in">`;
       document.body.appendChild(modal);
     }
 
+    // เริ่มต้นแสดงผลหน้าแรก
+    renderBorrowPage();
     syncData();
   </script>
 </body>
 </html>
-
