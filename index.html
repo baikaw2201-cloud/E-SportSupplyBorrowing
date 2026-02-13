@@ -70,7 +70,8 @@
     </section>
   </main>
 
-  <script>
+ <script>
+    // ใช้ URL เดิมของคุณ
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwggDtKULB6LrwdnAg13Y8kaQ7B6kBdlKCBS821KqA1udkpD7ICHWQ2uYpWdXZ96Zge/exec';
 
     const equipmentData = [
@@ -90,25 +91,30 @@
 
     let selectedId = null;
     let currentQty = 1;
-    let records = []; // เปลี่ยนจาก localStorage เป็นอาเรย์เปล่าเพื่อรอโหลดจากเน็ต
+    let records = []; 
 
-    // --- ฟังก์ชันหลัก: ดึงข้อมูลจาก Sheets เพื่อให้ซิงค์ทุกเครื่อง ---
+    // --- ฟังก์ชันดึงข้อมูลจาก Sheets ---
     async function syncData() {
       try {
         const response = await fetch(scriptURL);
         const data = await response.json();
-        records = data; // อัปเดตข้อมูลล่าสุดจาก Server
+        // ตรวจสอบว่ามีข้อมูลส่งกลับมาจริงหรือไม่
+        records = Array.isArray(data) ? data : []; 
         
-        // เมื่อข้อมูลมาแล้ว ให้ Refresh หน้าปัจจุบันที่เปิดอยู่
-        if(!document.getElementById('page-return').classList.contains('hidden')) renderReturnPage();
-        if(!document.getElementById('page-admin').classList.contains('hidden')) renderAdminPage();
-        console.log("Data Synced from Sheets");
+        // สั่งวาดหน้าจอใหม่ตามหน้าที่เปิดอยู่
+        const isReturnOpen = !document.getElementById('page-return').classList.contains('hidden');
+        const isAdminOpen = !document.getElementById('page-admin').classList.contains('hidden');
+        
+        if(isReturnOpen) renderReturnPage();
+        if(isAdminOpen) renderAdminPage();
+        
+        console.log("Synced Records:", records.length);
       } catch (err) {
         console.error("Sync Error:", err);
       }
     }
 
-    // เรียกโหลดข้อมูลทันทีที่เปิดเว็บ
+    // โหลดข้อมูลครั้งแรก
     syncData();
 
     function showPage(pageId) {
@@ -117,7 +123,7 @@
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
       document.getElementById('nav-' + pageId).classList.add('tab-active');
       
-      // ทุกครั้งที่สลับหน้า ให้ดึงข้อมูลใหม่เสมอเพื่อให้ข้อมูลเป็นปัจจุบัน
+      // ดึงข้อมูลใหม่ทุกครั้งที่สลับหน้า
       syncData(); 
       
       if(pageId === 'borrow') renderBorrowPage();
@@ -151,15 +157,16 @@
       document.getElementById('borrow-qty').innerText = currentQty;
     }
 
+    // --- แก้ไขการ Submit ยืม ---
     document.getElementById('borrow-form').onsubmit = async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submit-btn');
       btn.disabled = true;
-      btn.innerText = 'กำลังบันทึกข้อมูลออนไลน์...';
+      btn.innerText = '⏳ กำลังบันทึกออนไลน์...';
 
       const item = equipmentData.find(ex => ex.id === selectedId);
       const payload = {
-        action: 'borrow', // เพิ่ม action เพื่อบอกฝั่ง GAS
+        action: 'borrow',
         id: Date.now().toString(),
         itemName: item.name,
         qty: currentQty,
@@ -172,30 +179,43 @@
 
       try {
         await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-        alert('บันทึกสำเร็จ! ข้อมูลถูกส่งไปยังระบบส่วนกลางแล้ว');
-        location.reload();
-      } catch (err) {
-        alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
+        alert('✅ บันทึกสำเร็จ!');
+        // รีเซ็ตค่าฟอร์ม
+        document.getElementById('borrow-form').reset();
+        document.getElementById('borrow-form-container').classList.add('hidden');
+        selectedId = null;
         btn.disabled = false;
-        btn.innerText = 'ลองใหม่อีกครั้ง';
+        btn.innerText = 'ยืนยันการยืมอุปกรณ์';
+        
+        // ย้ายหน้าไปที่หน้าส่งคืน เพื่อให้เห็นข้อมูลใหม่ทันที
+        showPage('return'); 
+      } catch (err) {
+        alert('❌ เกิดข้อผิดพลาด');
+        btn.disabled = false;
       }
     };
 
     function renderReturnPage() {
       const list = document.getElementById('return-list');
+      // กรองเฉพาะรายการที่สถานะเป็น borrowed
       const borrowedItems = records.filter(r => r.status === 'borrowed');
       
       if(borrowedItems.length === 0) {
-        list.innerHTML = '<div class="text-center py-10"><p class="text-gray-400">ไม่มีอุปกรณ์ค้างส่ง</p><button onclick="syncData()" class="text-blue-500 text-xs underline mt-2">กดเพื่อรีเฟรชข้อมูล</button></div>';
+        list.innerHTML = `
+          <div class="text-center py-10 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+            <p class="text-gray-400">🙌 ไม่มีอุปกรณ์ค้างส่ง</p>
+            <button onclick="syncData()" class="text-blue-500 text-xs font-bold mt-2">🔄 กดเพื่อรีเฟรชข้อมูล</button>
+          </div>`;
         return;
       }
 
       list.innerHTML = borrowedItems.map(r => `
-        <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-orange-500 animate-fade-in">
+        <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-orange-500 animate-fade-in mb-4">
             <p class="font-bold text-lg text-slate-800">${r.itemName} (${r.qty} ชิ้น)</p>
-            <p class="text-xs text-slate-500 mt-1">ผู้ยืม: ${r.studentName}</p>
-            <p class="text-[10px] text-red-500 font-bold mt-1">กำหนดคืน: ${r.deadline}</p>
+            <p class="text-xs text-slate-500 mt-1">👤 ผู้ยืม: ${r.studentName}</p>
+            <p class="text-[10px] text-red-500 font-bold mt-1">🗓️ กำหนดคืน: ${r.deadline}</p>
           <div class="mt-4 pt-4 border-t border-dashed border-slate-100">
+            <p class="text-xs font-bold text-blue-600 mb-2 font-prompt">📷 ถ่ายรูปส่งคืนที่นี่:</p>
             <input type="file" accept="image/*" capture="environment" onchange="submitReturn('${r.id}', this)" class="w-full text-xs">
           </div>
         </div>
@@ -204,13 +224,16 @@
 
     async function submitReturn(id, input) {
         if(!input.files[0]) return;
+        const parent = input.parentElement;
+        const originalHTML = parent.innerHTML;
+        
         const reader = new FileReader();
         reader.onload = async function(e) {
             const img = new Image();
             img.src = e.target.result;
             img.onload = async function() {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 400;
+                const MAX_WIDTH = 500;
                 const scaleSize = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scaleSize;
@@ -219,7 +242,7 @@
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
 
                 try {
-                    input.parentElement.innerHTML = "⏳ กำลังอัปโหลดหลักฐาน...";
+                    parent.innerHTML = "<div class='text-blue-600 font-bold animate-pulse'>⏳ กำลังส่งหลักฐาน...</div>";
                     await fetch(scriptURL, { 
                         method: 'POST', 
                         body: JSON.stringify({ 
@@ -228,9 +251,12 @@
                             returnImage: compressedBase64 
                         }) 
                     });
-                    alert('ส่งคืนเรียบร้อย!');
-                    syncData();
-                } catch (err) { alert('ส่งข้อมูลไม่สำเร็จ'); }
+                    alert('🎉 ส่งคืนสำเร็จ!');
+                    await syncData(); // โหลดข้อมูลใหม่หลังจากคืนสำเร็จ
+                } catch (err) { 
+                    alert('❌ ผิดพลาด'); 
+                    parent.innerHTML = originalHTML;
+                }
             };
         };
         reader.readAsDataURL(input.files[0]);
@@ -238,29 +264,31 @@
 
     function renderAdminPage() {
       const list = document.getElementById('admin-list');
-      // เรียงจากใหม่ไปเก่า
       const sortedRecords = [...records].reverse();
       
       list.innerHTML = sortedRecords.length ? sortedRecords.map(r => `
         <div class="bg-white p-4 rounded-xl shadow-sm border mb-3 flex justify-between items-center animate-fade-in">
-          <div class="overflow-hidden">
+          <div>
             <p class="font-bold text-sm text-slate-700">${r.studentName}</p>
-            <p class="text-xs text-slate-400 truncate">${r.itemName} [${r.qty} ชิ้น]</p>
+            <p class="text-xs text-slate-400">${r.itemName} [${r.qty} ชิ้น]</p>
             <p class="text-[9px] text-slate-300">${r.borrowTime}</p>
-            ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="mt-2 bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold">👁️ ดูรูป</button>` : ''}
+            ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="mt-2 bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold underline">👁️ ดูรูปหลักฐาน</button>` : ''}
           </div>
           <span class="text-[10px] font-bold px-2 py-1 rounded-full ${r.status === 'borrowed' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}">
-            ${r.status === 'borrowed' ? 'ค้างส่ง' : 'คืนแล้ว'}
+            ${r.status === 'borrowed' ? '🔴 ยังไม่คืน' : '🟢 คืนแล้ว'}
           </span>
         </div>
-      `).join('') : '<p class="text-center text-gray-400">ไม่พบประวัติในระบบ</p>';
+      `).join('') : '<p class="text-center text-gray-400 py-10">ยังไม่พบประวัติในระบบ</p>';
     }
 
     function viewPhoto(base64Data) {
       const modal = document.createElement('div');
-      modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;";
+      modal.className = "fixed inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center p-4";
       modal.onclick = () => modal.remove();
-      modal.innerHTML = `<img src="${base64Data}" style="max-width:100%; max-height:80%; border-radius:10px; border:2px solid white;">`;
+      modal.innerHTML = `
+        <div class="text-white mb-2 self-end text-2xl font-bold cursor-pointer">&times; ปิด</div>
+        <img src="${base64Data}" class="max-w-full max-h-[80vh] rounded-lg border-2 border-white shadow-2xl">
+      `;
       document.body.appendChild(modal);
     }
 
@@ -268,6 +296,7 @@
 </script>
 </body>
 </html>
+
 
 
 
