@@ -60,79 +60,8 @@
 
     <section id="page-return" class="hidden space-y-4">
         <h3 class="font-bold text-xl text-center mb-6 text-slate-700">รายการที่รอการส่งคืน</h3>
-        <div id="return-list" class="grid gap-4"></div>
-    </section>
-
-    <section id="page-admin" class="hidden space-y-4">
-        <h3 class="font-bold text-xl mb-4 text-slate-700">ประวัติกิจกรรมทั้งหมด</h3>
-        <div id="admin-list" class="space-y-3"></div>
-    </section>
-  </main>
-
-  <script>
-    const scriptURL = '<!doctype html>
-<html lang="th" class="h-full">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบยืม - คืนอุปกรณ์กีฬา</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { font-family: 'Prompt', sans-serif; }
-    .tab-active { background: white; color: #2563eb; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .equipment-card { transition: all 0.2s ease-in-out; }
-    .equipment-card:active { transform: scale(0.95); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
-  </style>
-</head>
-<body class="h-full bg-slate-50">
-
-  <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-6 shadow-xl sticky top-0 z-50">
-    <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-2xl font-bold mb-4 font-prompt">คลังอุปกรณ์กีฬา</h1>
-      <nav class="flex p-1 bg-black/20 rounded-xl text-sm font-bold">
-        <button onclick="showPage('borrow')" id="nav-borrow" class="tab-active flex-1 py-2 rounded-lg transition-all">ยืมของ</button>
-        <button onclick="showPage('return')" id="nav-return" class="flex-1 py-2 rounded-lg transition-all">ส่งคืน</button>
-        <button onclick="showPage('admin')" id="nav-admin" class="flex-1 py-2 rounded-lg transition-all">แอดมิน</button>
-      </nav>
-    </div>
-  </header>
-
-  <main class="max-w-4xl mx-auto p-4 md:p-8">
-    <section id="page-borrow" class="space-y-6">
-      <div id="equipment-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
-
-      <div id="borrow-form-container" class="hidden bg-white p-6 rounded-2xl shadow-2xl border border-blue-100">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-lg text-blue-700">ระบุข้อมูลการยืม</h3>
-            <button onclick="closeForm()" class="text-gray-400 text-2xl">&times;</button>
-        </div>
-        <form id="borrow-form" class="space-y-4">
-          <input type="text" id="student-name" required placeholder="ชื่อ-นามสกุล" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-          <input type="number" id="student-id" required placeholder="รหัสประจำตัวนักเรียน" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-          
-          <div class="flex items-center justify-between bg-blue-50 p-4 rounded-xl">
-            <span class="font-bold text-blue-800">จำนวนที่ต้องการ:</span>
-            <div class="flex items-center gap-3">
-              <button type="button" onclick="changeQty(-1)" class="w-10 h-10 bg-white rounded-full shadow text-xl font-bold">-</button>
-              <span id="borrow-qty" class="text-xl font-bold w-8 text-center">1</span>
-              <button type="button" onclick="changeQty(1)" class="w-10 h-10 bg-white rounded-full shadow text-xl font-bold">+</button>
+        <div id="return-list" class="grid gap-4">
             </div>
-          </div>
-          
-          <div class="text-sm text-gray-500">กำหนดวันคืน:</div>
-          <input type="date" id="return-deadline" required class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500">
-          
-          <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-blue-700 active:scale-95 transition-all">ยืนยันการยืมอุปกรณ์</button>
-        </form>
-      </div>
-    </section>
-
-    <section id="page-return" class="hidden space-y-4">
-        <h3 class="font-bold text-xl text-center mb-6 text-slate-700">รายการที่รอการส่งคืน</h3>
-        <div id="return-list" class="grid gap-4"></div>
     </section>
 
     <section id="page-admin" class="hidden space-y-4">
@@ -142,10 +71,8 @@
   </main>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz0yE23D0Jvv3FGvIWLW6vX77bMlbrap5L9Xnp3Mgh-02I6Ob9wbyeWeqOqedT1xibf/exec';
-    const ADMIN_PASSWORD = '12345';
-    let isAdminAuthenticated = false;
-    
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz5EmH4u6u4O7UMYwd3Do643Jjdam-eFKwhQ2OltSs5opWSoSb15d2Xh8QIxD8bNd2A/exec';
+
     const equipmentData = [
       { id: 'fb', name: 'ฟุตบอล', emoji: '⚽', color: 'from-green-400 to-emerald-600' },
       { id: 'bb', name: 'บาสเกตบอล', emoji: '🏀', color: 'from-orange-400 to-red-600' },
@@ -155,60 +82,24 @@
       { id: 'pn', name: 'ปิงปอง', emoji: '🏓', color: 'from-red-400 to-pink-600' },
       { id: 'pt', name: 'เปตอง', emoji: '⚪', color: 'from-slate-400 to-slate-600' },
       { id: 'fn', name: 'ฟุตซอล', emoji: '⚽', color: 'from-teal-400 to-blue-500' },
+      { id: 'af', name: 'อเมริกันฟุตบอล', emoji: '🏈', color: 'from-amber-700 to-brown-900' },
       { id: 'jr', name: 'เชือกกระโดด', emoji: '➰', color: 'from-pink-400 to-rose-500' },
+      { id: 'mk', name: 'มาร์กเกอร์', emoji: '📐', color: 'from-orange-300 to-yellow-500' },
+      { id: 'sw', name: 'นกหวีด', emoji: '📢', color: 'from-gray-400 to-gray-600' }
     ];
 
     let selectedId = null;
     let currentQty = 1;
-    let records = []; 
-
-    // ฟังก์ชันดึงข้อมูลจาก Sheets
-    async function refreshData() {
-      try {
-        const response = await fetch(scriptURL + '?t=' + Date.now()); 
-        const data = await response.json();
-        
-        if (Array.isArray(data)) {
-          records = data.map(r => ({
-            ...r, 
-            status: r.status ? r.status.trim() : '' 
-          })); 
-        }
-        updateUI();
-        console.log("Synced Data:", records);
-      } catch (err) {
-        console.error("Sync error:", err);
-      }
-    }
-
-    // ฟังก์ชันอัปเดตหน้าจอตามข้อมูลปัจจุบัน
-    function updateUI() {
-        if(!document.getElementById('page-borrow').classList.contains('hidden')) renderBorrowPage();
-        if(!document.getElementById('page-return').classList.contains('hidden')) renderReturnPage();
-        if(!document.getElementById('page-admin').classList.contains('hidden')) renderAdminPage();
-    }
-
-    // เรียกดึงข้อมูลครั้งแรกเมื่อโหลดหน้าเว็บ
-    window.onload = refreshData;
+    let records = JSON.parse(localStorage.getItem('sports_system_data')) || [];
 
     function showPage(pageId) {
-      if (pageId === 'admin' && !isAdminAuthenticated) {
-        const password = prompt("🔑 รหัสผ่านแอดมิน:");
-        if (password === ADMIN_PASSWORD) {
-          isAdminAuthenticated = true;
-        } else {
-          alert("❌ รหัสผ่านไม่ถูกต้อง");
-          return;
-        }
-      }
-      
       document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
       document.getElementById('page-' + pageId).classList.remove('hidden');
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
       document.getElementById('nav-' + pageId).classList.add('tab-active');
-      
-      updateUI();
-      refreshData();
+      if(pageId === 'borrow') renderBorrowPage();
+      if(pageId === 'return') renderReturnPage();
+      if(pageId === 'admin') renderAdminPage();
     }
 
     function renderBorrowPage() {
@@ -224,13 +115,14 @@
     function selectItem(id) {
       selectedId = id;
       document.getElementById('borrow-form-container').classList.remove('hidden');
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       renderBorrowPage();
     }
 
     function closeForm() {
-      document.getElementById('borrow-form-container').classList.add('hidden');
-      selectedId = null;
-      renderBorrowPage();
+        document.getElementById('borrow-form-container').classList.add('hidden');
+        selectedId = null;
+        renderBorrowPage();
     }
 
     function changeQty(delta) {
@@ -242,11 +134,11 @@
       e.preventDefault();
       const btn = document.getElementById('submit-btn');
       btn.disabled = true;
-      btn.innerText = 'กำลังบันทึก...';
+      btn.innerText = 'กำลังบันทึกข้อมูล...';
 
       const item = equipmentData.find(ex => ex.id === selectedId);
       const payload = {
-        id: Date.now().toString(),
+        id: Date.now(),
         itemName: item.name,
         qty: currentQty,
         studentName: document.getElementById('student-name').value,
@@ -259,12 +151,12 @@
 
       try {
         await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-        alert('บันทึกสำเร็จ!');
+        records.push(payload);
+        localStorage.setItem('sports_system_data', JSON.stringify(records));
+        alert('บันทึกการยืมสำเร็จ!');
         location.reload();
-      } catch (err) { 
-        alert('ผิดพลาดในการบันทึก'); 
-        btn.disabled = false; 
-        btn.innerText = 'ยืนยันการยืมอุปกรณ์';
+      } catch (err) {
+        alert('ไม่สามารถเชื่อมต่อ Sheets ได้ แต่บันทึกในเครื่องแล้ว');
       }
     };
 
@@ -273,18 +165,22 @@
       const borrowedItems = records.filter(r => r.status === 'borrowed');
       
       if(borrowedItems.length === 0) {
-        list.innerHTML = '<div class="text-center py-10"><p class="text-gray-400">ไม่มีอุปกรณ์ค้างส่งในขณะนี้</p><button onclick="refreshData()" class="mt-2 text-blue-500 text-sm">🔄 กดเพื่ออัปเดต</button></div>';
+        list.innerHTML = '<p class="text-center py-10 text-gray-400">ไม่มีอุปกรณ์ค้างส่งในขณะนี้</p>';
         return;
       }
 
       list.innerHTML = borrowedItems.map(r => `
-        <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-orange-500 animate-fade-in mb-4">
-          <p class="font-bold text-lg text-slate-800">${r.itemName} (${r.qty} ชิ้น)</p>
-          <p class="text-xs text-slate-500 mt-1">ผู้ยืม: ${r.studentName} [${r.studentId}]</p>
-          <p class="text-[10px] text-slate-400 font-bold">📅 กำหนดคืน: ${r.deadline}</p>
+        <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-orange-500 animate-fade-in">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-lg text-slate-800">${r.itemName} (${r.qty} ชิ้น)</p>
+              <p class="text-xs text-slate-500 mt-1">ผู้ยืม: ${r.studentName} [${r.studentId}]</p>
+              <p class="text-[10px] text-red-500 font-bold mt-1">กำหนดคืน: ${r.deadline}</p>
+            </div>
+          </div>
           <div class="mt-4 pt-4 border-t border-dashed border-slate-100">
-            <p class="text-[10px] text-blue-600 mb-2 font-bold">📸 ถ่ายรูปขณะคืนของ:</p>
-            <input type="file" accept="image/*" capture="environment" onchange="submitReturn('${r.id}', this)" class="text-xs w-full">
+            <p class="text-xs font-bold text-blue-600 mb-2">📸 ถ่ายรูปหลักฐานการคืน:</p>
+            <input type="file" accept="image/*" capture="environment" onchange="submitReturn(${r.id}, this)" class="w-full text-xs">
           </div>
         </div>
       `).join('');
@@ -306,16 +202,16 @@
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
-                const itemData = records.find(r => r.id.toString() === id.toString());
-                itemData.status = 'pending';
-                itemData.returnImage = compressedBase64;
+                const idx = records.findIndex(r => r.id === id);
+                records[idx].status = 'pending';
+                records[idx].returnImage = compressedBase64;
                 
                 try {
-                    input.disabled = true;
-                    await fetch(scriptURL, { method: 'POST', body: JSON.stringify(itemData) });
-                    alert('ส่งหลักฐานการคืนแล้ว! รอแอดมินตรวจสอบ');
-                    await refreshData();
-                } catch (err) { alert('ส่งข้อมูลไม่สำเร็จ'); input.disabled = false; }
+                    await fetch(scriptURL, { method: 'POST', body: JSON.stringify(records[idx]) });
+                    localStorage.setItem('sports_system_data', JSON.stringify(records));
+                    alert('ส่งหลักฐานคืนสำเร็จ!');
+                    showPage('admin');
+                } catch (err) { alert('ส่งข้อมูลไม่สำเร็จ'); }
             };
         };
         reader.readAsDataURL(input.files[0]);
@@ -323,69 +219,18 @@
 
     function renderAdminPage() {
       const list = document.getElementById('admin-list');
-      let html = `<div class="bg-blue-50 p-4 rounded-xl mb-4 text-xs font-bold text-blue-800 flex justify-between items-center">
-                    <span>แผงควบคุมแอดมิน</span>
-                    <button onclick="refreshData()" class="text-blue-600">🔄 รีเฟรช</button>
-                  </div>`;
-
-      if (records.length === 0) {
-        list.innerHTML = html + '<p class="text-center py-10 text-gray-400">ยังไม่มีประวัติการทำรายการ</p>';
-        return;
-      }
-
-      html += records.slice().reverse().map(r => `
-        <div class="bg-white p-4 rounded-2xl shadow-sm border mb-3 animate-fade-in">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="font-bold text-slate-800">${r.studentName || 'ไม่ทราบชื่อ'}</span>
-              <p class="text-sm">📦 ${r.itemName} (${r.qty} ชิ้น)</p>
-              <p class="text-[9px] text-slate-400 mt-1 italic">${r.borrowTime}</p>
-            </div>
-            <span class="text-[10px] font-bold px-2 py-1 rounded-full ${getStatusColor(r.status)}">
-              ${r.status === 'borrowed' ? '🔴 ยืมอยู่' : r.status === 'pending' ? '🟡 รอตรวจ' : '🟢 คืนแล้ว'}
-            </span>
+      list.innerHTML = records.length ? records.map(r => `
+        <div class="bg-white p-4 rounded-xl shadow-sm border mb-3 flex justify-between items-center animate-fade-in">
+          <div>
+            <p class="font-bold text-sm text-slate-700">${r.studentName}</p>
+            <p class="text-xs text-slate-400">${r.itemName} [${r.qty} ชิ้น] - ${r.borrowTime}</p>
+            ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="mt-2 bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold">👁️ ดูรูปหลักฐาน</button>` : ''}
           </div>
-          <div class="flex gap-2 mt-3">
-            ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-[10px] font-bold border border-indigo-100">👁️ ดูรูป</button>` : ''}
-            ${r.status === 'pending' ? `<button onclick="approveReturn('${r.id}', event)" class="bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-sm">✅ อนุมัติการคืน</button>` : ''}
-          </div>
+          <span class="text-[10px] font-bold px-2 py-1 rounded-full ${r.status === 'borrowed' ? 'bg-blue-100 text-blue-700' : r.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">
+            ${r.status.toUpperCase()}
+          </span>
         </div>
-      `).join('');
-      list.innerHTML = html;
-    }
-
-    async function approveReturn(id, event) {
-        if(!confirm("ยืนยันว่าได้รับของคืนถูกต้องตามรูปภาพ?")) return;
-        const btn = event.target;
-        const originalText = btn.innerText;
-        btn.innerText = "กำลังอนุมัติ...";
-        btn.disabled = true;
-
-        try {
-            const res = await fetch(scriptURL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: "approve", id: id.toString() }) 
-            });
-            const result = await res.json();
-            if(result.result === "success") {
-                alert('✅ อนุมัติสำเร็จ!');
-                await refreshData();
-            } else {
-                alert('เกิดข้อผิดพลาด: ' + result.error);
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        } catch (err) { 
-            alert('ล้มเหลวในการเชื่อมต่อ'); 
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }
-    }
-
-    function getStatusColor(status) {
-        if(status === 'borrowed') return 'bg-red-50 text-red-600 border border-red-100';
-        if(status === 'pending') return 'bg-amber-50 text-amber-600 border border-amber-100';
-        return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
+      `).join('') : '<p class="text-center text-gray-400">ยังไม่มีประวัติกิจกรรม</p>';
     }
 
     function viewPhoto(base64Data) {
@@ -395,274 +240,11 @@
       modal.innerHTML = `
         <div style="text-align:right; width:100%; max-width:500px;"><button style="color:white; font-size:30px;">✕</button></div>
         <img src="${base64Data}" style="max-width:100%; max-height:80%; border-radius:10px; border:2px solid white;">
-        <p style="color:white; margin-top:15px; font-size:12px;">แตะที่ใดก็ได้เพื่อปิด</p>
       `;
       document.body.appendChild(modal);
     }
-    
-    renderBorrowPage();
-  </script>
-</body>
-</html>';
-    const ADMIN_PASSWORD = '12345';
-    let isAdminAuthenticated = false;
-    
-    const equipmentData = [
-      { id: 'fb', name: 'ฟุตบอล', emoji: '⚽', color: 'from-green-400 to-emerald-600' },
-      { id: 'bb', name: 'บาสเกตบอล', emoji: '🏀', color: 'from-orange-400 to-red-600' },
-      { id: 'vb', name: 'วอลเลย์บอล', emoji: '🏐', color: 'from-indigo-400 to-purple-600' },
-      { id: 'bt', name: 'แบดมินตัน', emoji: '🏸', color: 'from-blue-400 to-cyan-600' },
-      { id: 'tk', name: 'ตะกร้อ', emoji: '🥎', color: 'from-yellow-400 to-orange-500' },
-      { id: 'pn', name: 'ปิงปอง', emoji: '🏓', color: 'from-red-400 to-pink-600' },
-      { id: 'pt', name: 'เปตอง', emoji: '⚪', color: 'from-slate-400 to-slate-600' },
-      { id: 'fn', name: 'ฟุตซอล', emoji: '⚽', color: 'from-teal-400 to-blue-500' },
-      { id: 'jr', name: 'เชือกกระโดด', emoji: '➰', color: 'from-pink-400 to-rose-500' },
-    ];
 
-    let selectedId = null;
-    let currentQty = 1;
-    let records = []; 
-
-    // ฟังก์ชันดึงข้อมูลจาก Sheets
-    async function refreshData() {
-      try {
-        const response = await fetch(scriptURL + '?t=' + Date.now()); 
-        const data = await response.json();
-        
-        if (Array.isArray(data)) {
-          records = data.map(r => ({
-            ...r, 
-            status: r.status ? r.status.trim() : '' 
-          })); 
-        }
-        updateUI();
-        console.log("Synced Data:", records);
-      } catch (err) {
-        console.error("Sync error:", err);
-      }
-    }
-
-    // ฟังก์ชันอัปเดตหน้าจอตามข้อมูลปัจจุบัน
-    function updateUI() {
-        if(!document.getElementById('page-borrow').classList.contains('hidden')) renderBorrowPage();
-        if(!document.getElementById('page-return').classList.contains('hidden')) renderReturnPage();
-        if(!document.getElementById('page-admin').classList.contains('hidden')) renderAdminPage();
-    }
-
-    // เรียกดึงข้อมูลครั้งแรกเมื่อโหลดหน้าเว็บ
-    window.onload = refreshData;
-
-    function showPage(pageId) {
-      if (pageId === 'admin' && !isAdminAuthenticated) {
-        const password = prompt("🔑 รหัสผ่านแอดมิน:");
-        if (password === ADMIN_PASSWORD) {
-          isAdminAuthenticated = true;
-        } else {
-          alert("❌ รหัสผ่านไม่ถูกต้อง");
-          return;
-        }
-      }
-      
-      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-      document.getElementById('page-' + pageId).classList.remove('hidden');
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
-      document.getElementById('nav-' + pageId).classList.add('tab-active');
-      
-      updateUI();
-      refreshData();
-    }
-
-    function renderBorrowPage() {
-      const grid = document.getElementById('equipment-grid');
-      grid.innerHTML = equipmentData.map(eq => `
-        <div onclick="selectItem('${eq.id}')" class="equipment-card p-4 rounded-2xl bg-white border-2 transition-all cursor-pointer text-center ${selectedId === eq.id ? 'border-blue-600 bg-blue-50 ring-4 ring-blue-100' : 'border-transparent shadow-sm'}">
-          <div class="bg-gradient-to-br ${eq.color} w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-2 text-white shadow-md">${eq.emoji}</div>
-          <div class="font-bold text-sm">${eq.name}</div>
-        </div>
-      `).join('');
-    }
-
-    function selectItem(id) {
-      selectedId = id;
-      document.getElementById('borrow-form-container').classList.remove('hidden');
-      renderBorrowPage();
-    }
-
-    function closeForm() {
-      document.getElementById('borrow-form-container').classList.add('hidden');
-      selectedId = null;
-      renderBorrowPage();
-    }
-
-    function changeQty(delta) {
-      currentQty = Math.max(1, currentQty + delta);
-      document.getElementById('borrow-qty').innerText = currentQty;
-    }
-
-    document.getElementById('borrow-form').onsubmit = async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('submit-btn');
-      btn.disabled = true;
-      btn.innerText = 'กำลังบันทึก...';
-
-      const item = equipmentData.find(ex => ex.id === selectedId);
-      const payload = {
-        id: Date.now().toString(),
-        itemName: item.name,
-        qty: currentQty,
-        studentName: document.getElementById('student-name').value,
-        studentId: document.getElementById('student-id').value,
-        borrowTime: new Date().toLocaleString('th-TH'),
-        deadline: document.getElementById('return-deadline').value,
-        status: 'borrowed',
-        returnImage: ''
-      };
-
-      try {
-        await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-        alert('บันทึกสำเร็จ!');
-        location.reload();
-      } catch (err) { 
-        alert('ผิดพลาดในการบันทึก'); 
-        btn.disabled = false; 
-        btn.innerText = 'ยืนยันการยืมอุปกรณ์';
-      }
-    };
-
-    function renderReturnPage() {
-      const list = document.getElementById('return-list');
-      const borrowedItems = records.filter(r => r.status === 'borrowed');
-      
-      if(borrowedItems.length === 0) {
-        list.innerHTML = '<div class="text-center py-10"><p class="text-gray-400">ไม่มีอุปกรณ์ค้างส่งในขณะนี้</p><button onclick="refreshData()" class="mt-2 text-blue-500 text-sm">🔄 กดเพื่ออัปเดต</button></div>';
-        return;
-      }
-
-      list.innerHTML = borrowedItems.map(r => `
-        <div class="bg-white p-5 rounded-2xl shadow-sm border-l-8 border-orange-500 animate-fade-in mb-4">
-          <p class="font-bold text-lg text-slate-800">${r.itemName} (${r.qty} ชิ้น)</p>
-          <p class="text-xs text-slate-500 mt-1">ผู้ยืม: ${r.studentName} [${r.studentId}]</p>
-          <p class="text-[10px] text-slate-400 font-bold">📅 กำหนดคืน: ${r.deadline}</p>
-          <div class="mt-4 pt-4 border-t border-dashed border-slate-100">
-            <p class="text-[10px] text-blue-600 mb-2 font-bold">📸 ถ่ายรูปขณะคืนของ:</p>
-            <input type="file" accept="image/*" capture="environment" onchange="submitReturn('${r.id}', this)" class="text-xs w-full">
-          </div>
-        </div>
-      `).join('');
-    }
-
-    async function submitReturn(id, input) {
-        if(!input.files[0]) return;
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = async function() {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 400;
-                const scaleSize = MAX_WIDTH / img.width;
-                canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-                const itemData = records.find(r => r.id.toString() === id.toString());
-                itemData.status = 'pending';
-                itemData.returnImage = compressedBase64;
-                
-                try {
-                    input.disabled = true;
-                    await fetch(scriptURL, { method: 'POST', body: JSON.stringify(itemData) });
-                    alert('ส่งหลักฐานการคืนแล้ว! รอแอดมินตรวจสอบ');
-                    await refreshData();
-                } catch (err) { alert('ส่งข้อมูลไม่สำเร็จ'); input.disabled = false; }
-            };
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-
-    function renderAdminPage() {
-      const list = document.getElementById('admin-list');
-      let html = `<div class="bg-blue-50 p-4 rounded-xl mb-4 text-xs font-bold text-blue-800 flex justify-between items-center">
-                    <span>แผงควบคุมแอดมิน</span>
-                    <button onclick="refreshData()" class="text-blue-600">🔄 รีเฟรช</button>
-                  </div>`;
-
-      if (records.length === 0) {
-        list.innerHTML = html + '<p class="text-center py-10 text-gray-400">ยังไม่มีประวัติการทำรายการ</p>';
-        return;
-      }
-
-      html += records.slice().reverse().map(r => `
-        <div class="bg-white p-4 rounded-2xl shadow-sm border mb-3 animate-fade-in">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="font-bold text-slate-800">${r.studentName || 'ไม่ทราบชื่อ'}</span>
-              <p class="text-sm">📦 ${r.itemName} (${r.qty} ชิ้น)</p>
-              <p class="text-[9px] text-slate-400 mt-1 italic">${r.borrowTime}</p>
-            </div>
-            <span class="text-[10px] font-bold px-2 py-1 rounded-full ${getStatusColor(r.status)}">
-              ${r.status === 'borrowed' ? '🔴 ยืมอยู่' : r.status === 'pending' ? '🟡 รอตรวจ' : '🟢 คืนแล้ว'}
-            </span>
-          </div>
-          <div class="flex gap-2 mt-3">
-            ${r.returnImage ? `<button onclick="viewPhoto('${r.returnImage}')" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-[10px] font-bold border border-indigo-100">👁️ ดูรูป</button>` : ''}
-            ${r.status === 'pending' ? `<button onclick="approveReturn('${r.id}', event)" class="bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-sm">✅ อนุมัติการคืน</button>` : ''}
-          </div>
-        </div>
-      `).join('');
-      list.innerHTML = html;
-    }
-
-    async function approveReturn(id, event) {
-        if(!confirm("ยืนยันว่าได้รับของคืนถูกต้องตามรูปภาพ?")) return;
-        const btn = event.target;
-        const originalText = btn.innerText;
-        btn.innerText = "กำลังอนุมัติ...";
-        btn.disabled = true;
-
-        try {
-            const res = await fetch(scriptURL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: "approve", id: id.toString() }) 
-            });
-            const result = await res.json();
-            if(result.result === "success") {
-                alert('✅ อนุมัติสำเร็จ!');
-                await refreshData();
-            } else {
-                alert('เกิดข้อผิดพลาด: ' + result.error);
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        } catch (err) { 
-            alert('ล้มเหลวในการเชื่อมต่อ'); 
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }
-    }
-
-    function getStatusColor(status) {
-        if(status === 'borrowed') return 'bg-red-50 text-red-600 border border-red-100';
-        if(status === 'pending') return 'bg-amber-50 text-amber-600 border border-amber-100';
-        return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
-    }
-
-    function viewPhoto(base64Data) {
-      const modal = document.createElement('div');
-      modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;";
-      modal.onclick = () => modal.remove();
-      modal.innerHTML = `
-        <div style="text-align:right; width:100%; max-width:500px;"><button style="color:white; font-size:30px;">✕</button></div>
-        <img src="${base64Data}" style="max-width:100%; max-height:80%; border-radius:10px; border:2px solid white;">
-        <p style="color:white; margin-top:15px; font-size:12px;">แตะที่ใดก็ได้เพื่อปิด</p>
-      `;
-      document.body.appendChild(modal);
-    }
-    
     renderBorrowPage();
   </script>
 </body>
 </html>
-
